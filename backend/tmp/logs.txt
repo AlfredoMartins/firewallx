@@ -1,0 +1,10 @@
+1 | Server Start | The server started successfully. | 1679325600
+2 | User Login | User with ID 12345 logged in. | 1679339200
+3 | Error | An error occurred while processing the request. | 1679342800
+4 | Data Sync | Data synchronization completed successfully. | 1679346400
+5 | System Shutdown | The system is shutting down. | 1679350000
+6 | Backup | Backup completed successfully. | 1679353600
+7 | Maintenance | Scheduled maintenance started. | 1679357200
+8 | Update | System update finished. | 1679360800
+9 | Reboot | System rebooted. | 1679364400
+10 | Security Alert | Security alert triggered. | 1679368000
