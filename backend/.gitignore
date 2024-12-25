@@ -1,2 +1,4 @@
-readme.md
-.venv
+logs/
+.venv/
+README.md
+*.pyc

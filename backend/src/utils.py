@@ -23,3 +23,20 @@ def log_event(message):
 
     with open(log_file, "a") as file:
         file.write(f"{message}\n")
+
+def read_logs():
+    filename = "tmp/logs.txt"
+    res = []
+    with open(filename, 'r') as file:
+        for line in file:
+            array = line.split('|')
+            if len(array) < 4:
+                continue  # Skip malformed lines
+            obs = {
+                "id": array[0].strip(),
+                "title": array[1].strip(),
+                "message": array[2].strip(),
+                "time": array[3].strip(),
+            }
+            res.append(obs)
+    return res

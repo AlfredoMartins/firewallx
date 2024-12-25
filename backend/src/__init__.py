@@ -6,11 +6,9 @@ from dotenv import load_dotenv
 # Load environment variables
 load_dotenv()
 
-# Initialize Flask API
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
 
-# Enable CORS
 CORS(app, origins=["http://localhost:5173", "http://192.168.1.77:5173"], supports_credentials=True)
 
 # Load Firewall and Config
