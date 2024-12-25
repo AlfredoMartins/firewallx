@@ -1,4 +1,8 @@
 logs/
+tmp/
 .venv/
 README.md
 *.pyc
+src/__pycache__
+src/routes/__pycache__
+src/config/__pycache__

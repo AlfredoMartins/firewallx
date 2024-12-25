@@ -21,6 +21,11 @@ firewall = Firewall()
 config = Config().dev_config
 app.env = config.ENV  # Set app environment
 
+# Define routes
+@app.route('/')
+def index():
+    return "Hello, It's working..."
+
 # Register API blueprint
 from routes.api import api
 app.register_blueprint(api, url_prefix="/api")
