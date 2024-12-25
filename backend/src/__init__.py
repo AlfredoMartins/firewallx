@@ -1,24 +1,26 @@
-
-from flask import Flask, request, jsonify
+from flask import Flask
 from flask_cors import CORS
 from config.config import Config
-
 from dotenv import load_dotenv
 
-# loads enviroment variables
+# Load environment variables
 load_dotenv()
 
-# API
+# Initialize Flask API
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret!'
+
+# Enable CORS
 CORS(app, origins=["http://localhost:5173", "http://192.168.1.77:5173"], supports_credentials=True)
 
-# calling the dev configuration
+# Load Firewall and Config
+from firewall import Firewall
+firewall = Firewall()
+
+# Load environment config
 config = Config().dev_config
+app.env = config.ENV  # Set app environment
 
-# setting the API to use dev env
-app.env = config.ENV
-
-# import api blueprint to register it with app
+# Register API blueprint
 from routes.api import api
 app.register_blueprint(api, url_prefix="/api")

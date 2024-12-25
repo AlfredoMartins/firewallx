@@ -1,14 +1,18 @@
-from app import TCP, IP, THRESHOLD
+import os
+import time
+from scapy.all import TCP
 
 def read_ip_file(filename):
-    with open(filename, "r+") as file:
-        ips = [line.strip() for line in file]
-    return set(ips)
+    try:
+        with open(filename, "r") as file:
+            return {line.strip() for line in file}
+    except FileNotFoundError:
+        return set()
 
 def is_nimda_worm(packet):
     if packet.haslayer(TCP) and packet[TCP].dport == 80:
-        payload = packet[TCP].payload
-        return "GET /scripts/root.exe" in str(payload)
+        payload = str(packet[TCP].payload)
+        return "GET /scripts/root.exe" in payload
     return False
 
 def log_event(message):
@@ -17,74 +21,5 @@ def log_event(message):
     timestamp = time.strftime("%Y-%m-%d_%H-%M-%S", time.localtime())
     log_file = os.path.join(log_folder, f"log_{timestamp}.txt")
 
-    with open(log_file, "a+") as file:
+    with open(log_file, "a") as file:
         file.write(f"{message}\n")
-
-def block_ip(ip):
-    os.system(f"iptables -A INPUT -s {ip} -j DROP")
-
-def unblock_ip(ip):
-    os.system(f"iptables -D INPUT -s {ip} -j ACCEPT")
-
-def packet_callback(packet):
-    src_ip = packet[IP].src
-
-    if src_ip in whitelist_ips:
-        return
-    
-    if src_ip in blacklist_ips:
-        os.system(f"iptables -A INPUT -s {src_ip} -j DROP")
-        log_event(f"Blocking blacklisted IP: {src_ip}")
-        return
-    
-    if is_nimda_worm(packet):
-        print(f"Blocking Nimda source IP: {src_ip}")
-        block_ip(src_ip)
-        log_event(f"Blocking Nimda source IP: {src_ip}")
-        return
-    
-    packet_count[src_ip] += 1
-
-    current_time = time.time()
-    time_interval = current_time - start_time[0]
-
-    if time_interval >= 1:
-        for ip, count in packet_count.items():
-            packet_rate = count / time_interval
-
-            if packet_rate > THRESHOLD and ip not in blocked_ips:
-                #msg = f"Blocking IP: {ip}, packet rate: {packet_rate}"
-                queue_thread.put(ip)
-                block_ip(ip)
-                log_event(f"Blocking IP: {ip}, packet rate: {packet_rate}")
-                blocked_ips.add(ip)
-
-        packet_count.clear()
-        start_time[0] = current_time
-
-def read_logs():
-    filename = "tmp/logs.txt"
-
-    res = []
-    with open(filename, 'r') as file:
-        for line in file:
-            array = line.split('|')
-            if len(array) < 4:
-                continue  # Skip malformed lines
-            obs = {
-                "id": array[0].strip(),
-                "title": array[1].strip(),
-                "message": array[2].strip(),
-                "time": array[3].strip(),
-            }
-
-            res.append(obs)
-    return res
-
-def handle_notify():
-    while True:
-        if not queue_thread.empty():
-            msg = queue_thread.get()
-            if msg is None: 
-                break
-            socketio.emit('new-blocked', {'msg': msg})

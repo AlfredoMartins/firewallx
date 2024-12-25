@@ -149,8 +149,7 @@ if __name__ == '__main__':
         print("This script requires root privileges.")
         sys.exit(1)
     
-    whitelist_ips = read_ip_file("tmp/whitelist.txt")
-    blacklist_ips = read_ip_file("tmp/blacklist.txt")
+
 
     packet_count = defaultdict(int)
     start_time = [time.time()]
