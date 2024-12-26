@@ -26,6 +26,10 @@ app.env = config.ENV  # Set app environment
 def index():
     return "Hello, It's working..."
 
+@app.route('/health')
+def health():
+    return "Hello, It's working..."
+
 # Register API blueprint
 from routes.api import api
 app.register_blueprint(api, url_prefix="/api")
